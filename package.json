@@ -1,8 +1,8 @@
 {
-  "name": "chanel-stream-api",
+  "name": "chanel-stream-server",
   "version": "1.0.0",
   "main": "index.ts",
-  "repository": "https://github.com/EdersonDav/chanel-stream-API",
+  "repository": "https://github.com/EdersonDav/chanel-stream-server",
   "author": "EdersonDav",
   "license": "MIT",
   "scripts": {

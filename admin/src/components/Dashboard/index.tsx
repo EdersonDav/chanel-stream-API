@@ -1,30 +1,16 @@
 import { useState, ChangeEvent } from 'react';
+import io from 'socket.io-client';
 
-import { Container, Content, InputControl, SelectControl, Controls } from "./style"
-import { api } from '../../services/api';
-interface VideoInformations{
-  link: string;
-  type: string
-}
+import { Container, Content, InputControl, SelectControl, Controls } from "./style";
+import { VideoInformations } from '../../types/interfacesVideos';
+import { validData } from '../../helpers/validateVideo';
+
 
 export const Dashboard = () =>{
-  const typeArray = ['playlist', 'live', 'common']
   const [informations, setInformations] = useState<VideoInformations>({
     link:"",
     type:""
   });
-
-  const isValidHttpUrl = (data: string) => {
-    let url;
-  
-    try {
-      url = new URL(data);
-    } catch (_) {
-      return false;
-    }
-  
-    return url.protocol === "http:" || url.protocol === "https:";
-  }
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) =>{
     const {value} = e.target;
@@ -36,18 +22,28 @@ export const Dashboard = () =>{
     setInformations({...informations, type: value})
   }
 
+  
   const handleSubmit = async () =>{
-    if(typeArray.includes(informations.type) && isValidHttpUrl(informations.link)){
-      const response = await api.post('/videos', informations);
-      if(response.status === 200){
-        alert('Video Salvo')
-        setInformations({
-          link:'',
-          type:''
-        })
+    try {
+      if(validData(informations)){
+        const socket = io("http://localhost:5000");
+        socket.emit("video", informations);
+        socket.on("video", data => {
+          if(validData(data)){
+            alert('Video Salvo')
+            setInformations({
+              link:'',
+              type:''
+            })
+          }else{
+           alert('Erro ao salvar vídeo')
+          }
+        });
+      }else{
+        throw new Error('Tipo ou Link do vídeo inválido')
       }
-    }else{
-      alert('Tipo ou Link do video inválido')
+    } catch (error:any) {
+      alert(error.message)
     }
   }
 

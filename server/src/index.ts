@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import dotenv from 'dotenv';
 import { httpServer } from './http';
 import './webSocket';

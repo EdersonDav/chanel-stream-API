@@ -1,12 +1,14 @@
 import { IVideos } from '../@types/videos.types';
+import { validData } from '../helpers/validateVideo';
 import { io } from '../http'
-let emit: any;
+
 
 io.on('connection', socket => {
-  console.log(socket.id);
-  emit = (data: IVideos) => {
+  socket.on('video', (data) => {
+    console.log(data);
+    if (!validData(data)) {
+      io.emit('video', 'error')
+    }
     io.emit('video', data)
-  }
+  })
 })
-
-export { emit }
